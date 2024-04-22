@@ -1,0 +1,1 @@
+/data/docs/sgu/Физика/240410-лаба-3.1/SCWorks.cls
