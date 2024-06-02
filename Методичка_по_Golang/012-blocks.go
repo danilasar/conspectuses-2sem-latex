@@ -1,1 +1,5 @@
-/data/docs/other/240415-Golang-методичка/012-blocks.go
+var (
+	a int = 1
+	b int = 2
+	c = "sample"
+)

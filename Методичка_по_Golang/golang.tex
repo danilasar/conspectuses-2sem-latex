@@ -1,1 +1,209 @@
-/data/docs/other/240415-Golang-методичка/golang.tex
+\documentclass{book}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage{qrcode}
+\usepackage{outlines}
+
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+%\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{lststyle:golang}{
+    %backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstdefinestyle{lststyle:sh}{
+    %backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\title{Курс молодого бойца: Golang}
+\author{Даня Грозный}
+%\with{Владимир Владимирович}
+
+\begin{document}
+\chapter{Основы}
+
+%\begin{lstlisting}[language=go, caption=Пример работы strings.Builder, style=lststyle:golang]
+\begin{minted}[linenos]{go}
+    package main
+
+    import (
+        "fmt"
+        "strings"
+    )
+    
+    func main() {
+        var str strings.Builder
+    
+        str.WriteString("a")
+        str.WriteString("b")
+        str.WriteString("c")
+    
+        fmt.Println(str.String())
+    }
+\end{minted}
+%\end{lstlisting}
+\section{Утилита Go}
+Базовая программа, с которой начинается работа на языке Golang, -- $go$. Этот инструмент используется:
+\begin{itemize}
+    \item Для обновления зависимостей
+    \item Для сборки и тестирования проектами
+    \item Для управления артефактами
+    \item Для форматирования исходного кода
+\end{itemize}
+
+Всё что нужно для работы на Go содержит в себе эта утилита. Отдалённо её можно сравнить с \textit{gcc}, хотя в сравнении с \textit{gcc} в \textit{go} вложен гораздо больший функционал. С полным её функционалом можно ознакомиться на официальном сайте:
+\begin{center}
+    \begin{tabular}{cc}
+        https://pkg.go.dev/cmd/go & \qrcode{https://pkg.go.dev/cmd/go}
+    \end{tabular}
+\end{center}
+
+Ежедневно Go-разработчик сталкивается с небольшим набором самых необходимых команд. Среди них:
+\begin{outline}
+    \1 $go~build$ компилирует проект и создаёт исполняемый бинарный файл
+    \2 $go~build-race$ проверяет наличие проблем с параллелизмом/ конкурентностью. Если вы написали программу с использованием многопоточности, что довольно распространено, вам необходимо проверить свой код, чтобы выявить любые ошибки.
+    \1 $go~run$ запускает проект без создания исполняемого файла (то есть работает в режиме интерпретатора). Это полезно при тестировании кода.
+    \1 $go~mod$ управляет модулями и зависимостями, а именно файлом go.mod
+    \2 $go~mod~tidy$ наводит порядок в файле \textit{go.mod}, загружает и обновляет зависимости
+    \1 $go~test$ запускает тестовый набор проектами. Сюда полезно писать тесты для своего кода, чтобы убедиться, что он сохраняет правильную логику после обновления.
+    \1 $go~fmt$ форматирует все файлы исходного кода согласно рекомендациям от Google
+\end{outline}
+
+\section{Аргументы командной строки}
+Как известно, многие программы, в особенности утилиты командной строки, для параметеризации выполнения используют аргументы командной строки. На примере утилиты \textit{apt"=get}, использующейся для работы с пакетами в ряде дистрибутивов ОС Linux (в частности, Alt Linux и всего семейства Debian):
+\begin{lstlisting}[language=sh]
+    apt-get install go
+\end{lstlisting}
+Здесь:
+\begin{itemize}
+    \item \textit{apt"=get} --- программа, которую мы хотим выполнить
+    \item $install$ и $go$ --- аргументы командной строки. Получив и интерпретировав их, \textit{apt"=get} поймёт, что от неё требуется найти и установить пакет $go$
+\end{itemize}
+
+Это же мы видели на примере уже рассмотренной утилиты \textit{go}: \textit{go run hello.go} передаст программе \textit{go} аргументы \textit{run} и \textit{hello.go}.
+
+Возможность работать с аргументами командной строки предусмотрена и в языке Go.
+
+Массив строк os.Args предоставляет собой необработанные аргументы командной строки. Обратите внимание, что первое значение в этом срезе - это путь к программе, а os.Args [1:] содержит аргументы программы. Напишем код, работающий с элементами этого массива:
+
+\lstinputlisting[language=go,style=lststyle:golang,caption={Скрипт, выводящий аргументы командной строки на экран}]{010-os.args.go}
+
+Чтобы поэкспериментировать с аргументами командной строки, лучше сначала создать двоичный файл с помощью go build. Поэтому выполним в терминале:
+
+\lstinputlisting[language=sh,style=lststyle:sh]{011-os.args.sh}
+На вывод мы получим следующий текст:
+\begin{lstlisting}[style=lststyle:sh]
+[./command-line-arguments a b c d]       
+[a b c d]
+c
+\end{lstlisting}
+
+\section{Переменные}
+\subsection{Что такое переменные?}
+
+Переменные представляют способ для доступа к данным в оперативной памяти, которые могут быть любыми, то есть изменчивыми.
+
+По сути, переменная --- это просто псевдоним некоторой области памяти компьютера. Она нужна для упрощения доступа к данным, хранящимся там.
+
+Чтобы сохранить информацию в области памяти, на которую ссылается переменная, нужно выполнить операцию присваивания (в языке Go её принято обозначать как \textit{:=}).
+
+Переменная объединяет в себе несколько понятий:
+\begin{itemize}
+    \item Идентификатор --- имя переменной, которым мы оперируем в коде
+    \item Данные, которые хранятся в выделенной области памяти (факт отсутствия данных --- тоже данные)
+    \item Тип данных (как интерпретировать двоичный код, хранящийся в памяти: это может быть числом, текстом, структурой или чем-либо ещё)
+\end{itemize}
+
+\subsection{Объявление и инициализация переменной}
+
+Создать (то есть объявить и инциализировать) переменную можно тремя способами. Рассмотрим их на примере \textit{example}, в которую будет записано число 3.
+\begin{itemize}
+    \item Мы объявляем переменную \textit{example} с помощью ключевого слова \textit{var} и тут же инициализируем её, присваивая ей значение 3. Go автоматически определит её тип данных --- целое число (\textit{int}).
+\begin{lstlisting}[language=go,style=lststyle:golang]
+var example = 3
+\end{lstlisting}
+
+    \item Другой вариант аналогичен предыдущему, но здесь мы явно указываем тип данных переменной.
+\begin{lstlisting}[language=go,style=lststyle:golang]
+var example int = 3
+\end{lstlisting}
+
+    \item И, наконец, мы можем сначала объявить переменную, а позже и инициализировать её, присвоив значение 3.
+\begin{lstlisting}[language=go,style=lststyle:golang]
+var example int
+example = 3
+\end{lstlisting}
+
+\end{itemize}
+
+\subsection{Комплексное создание переменных. Блоки}
+Мы можем создать и инициализировать несколько переменных одной строчкой, перечислив их имена и значения следующим образом:
+\begin{lstlisting}[language=go,style=lststyle:golang]
+var a, b, c = 1, 2, "sample"
+\end{lstlisting}
+
+Тогда \textit{a} будет иметь значение 1, \textit{b} -- 2, \textit{c} -- "sample".
+
+Кроме того, мы можем создать так называемый блок:
+
+\lstinputlisting[language=go,style=lststyle:golang]{012-blocks.go}
+
+ToDo
+
+\begin{lstlisting}[language=go,style=lststyle:golang]
+example := 3
+a, b := 1, "sample
+\end{lstlisting}
+
+Переменные могут быть переопределены, а из значения можно присваивать другим переменным:
+\lstinputlisting[language=go,style=lststyle:golang]{013-vars.go}
+
+Обратите внимание, пременная существует внутри блока когда и всех дочерних блоков, за его пределами обратиться к ней невозможно. Имя уникально, внутри одной области видимости может существовать только одна переменная с таким идентификатором.
+
+Переменные, которые были объявлены, но не получили значения, автоматически инициализируются со значением по умолчанию:
+\begin{outline}
+    \1 Для строки это пустая строка: "\,"
+    \1 Для числа это 0
+    \1 Для любых других типов данных \textit{nil}
+\end{outline}
+
+\end{document}

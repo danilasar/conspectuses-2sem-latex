@@ -1,1 +1,18 @@
-/data/docs/other/240415-Golang-методичка/010-os.args.go
+package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+
+    argsWithProg := os.Args
+    argsWithoutProg := os.Args[1:]
+
+    arg := os.Args[3]
+
+    fmt.Println(argsWithProg)
+    fmt.Println(argsWithoutProg)
+    fmt.Println(arg)
+}

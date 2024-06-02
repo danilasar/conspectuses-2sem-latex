@@ -1,1 +1,2 @@
-/data/docs/other/240415-Golang-методичка/011-os.args.sh
+ go build 010-os.args.go
+ ./010-os.args a b c d
